@@ -1,4 +1,4 @@
-# MNIST classification by TensorFlow #
+# MNIST classification by TensorFlow and Pytorch #
 
 - [MNIST For ML Beginners](https://www.tensorflow.org/tutorials/mnist/beginners/)
 - [Deep MNIST for Experts](https://www.tensorflow.org/tutorials/mnist/pros/)
