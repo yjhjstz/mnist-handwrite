@@ -1,0 +1,7 @@
+Flask==0.12
+Jinja2==2.9.5
+protobuf==3.5.2
+requests==2.20.0
+numpy==1.14.2
+tensorflow==1.7.1
+tensorflow_serving_api==1.7.1
