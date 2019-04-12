@@ -10,7 +10,7 @@ import caffe2_service_pb2
 import utils
 
 
-def inference_pytorch(input, host, token=''):
+def inference_pytorch(input, url, token=''):
     spec = caffe2_service_pb2.ModelSpec()
     spec.name = 'mnist'
 
@@ -30,7 +30,6 @@ def inference_pytorch(input, host, token=''):
         'Authorization': "Bearer " + token
     }
 
-    url = "http://" + host + "/v1/model/pytorch/predict"
     res = requests.post(url=url,
                         data=data,
                         headers=headers)
@@ -42,14 +41,14 @@ def inference_pytorch(input, host, token=''):
         print(res.content)
 
 
-def inference_tf(input, host, token=''):
+def inference_tf(input, url, token=''):
     request = predict_pb2.PredictRequest()
     response = predict_pb2.PredictResponse()
 
     request.model_spec.name = 'mnist2'
-    request.model_spec.signature_name = 'predict_images'
+    request.model_spec.signature_name = 'serving_default'
 
-    request.inputs['images'].CopyFrom(
+    request.inputs['inputs'].CopyFrom(
         tf.make_tensor_proto(input, shape=[1, 784]))
 
     data = request.SerializeToString()
@@ -61,13 +60,12 @@ def inference_tf(input, host, token=''):
         # !!! replace your token
         'Authorization': "Bearer " + token
     }
-    url = "http://" + host + "/v1/model/tensorflow/predict"
 
     res = requests.post(url, data, headers=headers, verify=False)
     if (res.status_code == 200 and res.headers['Content-Type'] == data_type):
         # print res.content
         response.ParseFromString(res.content)
-        v = response.outputs['scores'].float_val
+        v = response.outputs['outputs'].float_val
         return np.array(v).flatten().tolist()
     else:
         # handle error msg
@@ -75,15 +73,15 @@ def inference_tf(input, host, token=''):
 
 # webapp
 app = Flask(__name__)
-app.config['HOST'] = os.getenv("host")
+app.config.from_pyfile('config.py')
 
 @app.route('/api/mnist', methods=['POST'])
 def mnist():
-    host = app.config['HOST']
+    token = app.config.get("TOKEN")
     #input = ((255 - np.array(request.json, dtype=np.uint8)) / 255.0).reshape(1, 784).astype(np.float32)
     input = (np.array(request.json, dtype=np.uint8) / 255.0).reshape(1, 784).astype(np.float32)
-    output1 = inference_pytorch(input, host)
-    output2 = inference_tf(input, host)
+    output1 = inference_pytorch(input, app.config.get("PYTROCH_URL"), token)
+    output2 = inference_tf(input, app.config.get("TF_URL"), token)
     return jsonify(results=[output1, output2])
 
 
