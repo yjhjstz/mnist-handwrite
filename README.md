@@ -12,10 +12,10 @@
 
 
 ### How to run ###
+* 修改config.py, 配置云预测URL和token.
 
     $ pip install -r requirements.txt
     $ sh build-protoc.sh
-    $ export host=ip:port
     $ python main.py
 
 
