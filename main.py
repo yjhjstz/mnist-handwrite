@@ -77,11 +77,10 @@ app.config.from_pyfile('config.py')
 
 @app.route('/api/mnist', methods=['POST'])
 def mnist():
-    token = app.config.get("TOKEN")
     #input = ((255 - np.array(request.json, dtype=np.uint8)) / 255.0).reshape(1, 784).astype(np.float32)
     input = (np.array(request.json, dtype=np.uint8) / 255.0).reshape(1, 784).astype(np.float32)
-    output1 = inference_pytorch(input, app.config.get("PYTROCH_URL"), token)
-    output2 = inference_tf(input, app.config.get("TF_URL"), token)
+    output1 = inference_pytorch(input, app.config.get("PYTROCH_URL"), app.config.get("PYTROCH_TOKEN"))
+    output2 = inference_tf(input, app.config.get("TF_URL"), app.config.get("TF_TOKEN"))
     return jsonify(results=[output1, output2])
 
 
