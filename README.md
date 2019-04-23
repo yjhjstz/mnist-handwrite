@@ -14,8 +14,8 @@
 ### How to run ###
 * 修改config.py, 配置云预测URL和token.
 
-    $ pip install -r requirements.txt
-    $ sh build-protoc.sh
-    $ python main.py
+   - $ pip install -r requirements.txt
+   - $ sh build-protoc.sh
+   - $ python main.py
 
 
