@@ -27,7 +27,7 @@ def inference_pytorch(input, url, token=''):
         # !!! set content type 
         'content-type': data_type,
         # !!! replace your token
-        'Authorization': "Bearer " + token
+        'Authorization': "AppCode " + token
     }
 
     res = requests.post(url=url,
@@ -45,10 +45,10 @@ def inference_tf(input, url, token=''):
     request = predict_pb2.PredictRequest()
     response = predict_pb2.PredictResponse()
 
-    request.model_spec.name = 'mnist2'
-    request.model_spec.signature_name = 'serving_default'
+    request.model_spec.name = 'mnist'
+    request.model_spec.signature_name = 'predict_images'
 
-    request.inputs['inputs'].CopyFrom(
+    request.inputs['images'].CopyFrom(
         tf.make_tensor_proto(input, shape=[1, 784]))
 
     data = request.SerializeToString()
@@ -58,14 +58,14 @@ def inference_tf(input, url, token=''):
         # !!! set content type 
         'content-type': data_type,
         # !!! replace your token
-        'Authorization': "Bearer " + token
+        'Authorization': "AppCode " + token
     }
 
     res = requests.post(url, data, headers=headers, verify=False)
     if (res.status_code == 200 and res.headers['Content-Type'] == data_type):
         # print res.content
         response.ParseFromString(res.content)
-        v = response.outputs['outputs'].float_val
+        v = response.outputs['scores'].float_val
         return np.array(v).flatten().tolist()
     else:
         # handle error msg
